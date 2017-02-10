@@ -6,4 +6,9 @@
     <Parameter Name="MyParameter" Value="Value1" />
   </Section>
   -->
+
+  <Section Name="Health">
+    <Parameter Name="HealthCheckIntervalSeconds" Value="40" />
+  </Section>
+
 </Settings>
