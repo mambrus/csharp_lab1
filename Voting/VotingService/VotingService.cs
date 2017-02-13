@@ -73,6 +73,12 @@ namespace VotingService
 
             // Report the load
             Partition.ReportLoad(new[] { new LoadMetric("RPS", (int)rps) });
+
+            ServiceEventSource.Current.HealthReport(
+                hi.SourceId, hi.Property, Enum.GetName(typeof(HealthState), hi.HealthState),
+                Context.PartitionId,
+                Context.ReplicaOrInstanceId,
+                hi.Description);
         }
 
     }
