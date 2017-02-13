@@ -91,6 +91,27 @@ namespace VotingService
                 Context.PartitionId,
                 Context.ReplicaOrInstanceId,
                 hi.Description);
+
+            // Report failing health report to cause rollback
+            var nodeList = _client.QueryManager.
+                GetNodeListAsync(Context.NodeContext.NodeName).GetAwaiter().GetResult();
+            var node = nodeList[0];
+            if ("4" == node.UpgradeDomain || "3" == node.UpgradeDomain || "2" == node.UpgradeDomain)
+            {
+                hi = new HealthInformation(
+                    "VotingServiceHealth",
+                    "Error_Heartbeat",
+                    HealthState.Error);
+                hi.TimeToLive = _interval.Add(_interval);
+                hi.Description = $"Bogus health error to force rollback.";
+                hi.RemoveWhenExpired = true;
+                hi.SequenceNumber = HealthInformation.AutoSequenceNumber;
+                sshr = new StatelessServiceInstanceHealthReport(
+                    Context.PartitionId,
+                    Context.InstanceId,
+                    hi);
+                _client.HealthManager.ReportHealth(sshr);
+            }
         }
 
         private void CodePackageActivationContext_ConfigurationPackageModifiedEvent(
