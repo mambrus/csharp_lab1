@@ -49,9 +49,17 @@ namespace VotingService
 
         protected override Task OnOpenAsync(CancellationToken cancellationToken)
         {
-            _client = new FabricClient();
-            _healthTimer.Change(_interval, _interval);
+            // Force a call to LoadConfiguration because we missed the first event callback.
+            LoadConfiguration();
 
+            _client = new FabricClient();
+
+            /* Note: this looks wrong to me as _healthTimer allready has been instantiated once
+               (in the constructor) */
+            _healthTimer = new Timer(ReportHealthAndLoad,
+                null,
+                _interval,
+                _interval);
             return base.OnOpenAsync(cancellationToken);
         }
 
