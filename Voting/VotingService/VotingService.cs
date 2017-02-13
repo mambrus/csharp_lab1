@@ -82,5 +82,51 @@ namespace VotingService
                 hi.Description);
         }
 
+        private void CodePackageActivationContext_ConfigurationPackageModifiedEvent(
+            object sender,
+            PackageModifiedEventArgs<ConfigurationPackage> e)
+        {
+            ServiceEventSource.Current.Message(
+                "CodePackageActivationContext_ConfigurationPackageModifiedEvent");
+            LoadConfiguration();
+        }
+
+        private void LoadConfiguration()
+        {
+            ServiceEventSource.Current.Message("LoadConfiguration");
+
+            // Get the Health Check Interval configuration value.
+            ConfigurationPackage pkg =
+                Context.CodePackageActivationContext.GetConfigurationPackageObject("Config");
+
+            if (null != pkg)
+            {
+                if (true == pkg.Settings?.Sections?.Contains("Health"))
+                {
+                    ConfigurationSection settings = pkg.Settings.Sections["Health"];
+                    if (true == settings?.Parameters.Contains("HealthCheckIntervalSeconds"))
+                    {
+                        int value = 0;
+                        ConfigurationProperty prop =
+                            settings.Parameters["HealthCheckIntervalSeconds"];
+
+                        if (int.TryParse(prop?.Value, out value))
+                        {
+                            _interval = TimeSpan.FromSeconds(Math.Max(30, value));
+                            _healthTimer.Change(_interval, _interval);
+                        }
+
+                        ServiceEventSource.Current.HealthReportIntervalChanged(
+                            "VotingServiceHealth",
+                            "IntervalChanged",
+                            Context.PartitionId,
+                            Context.ReplicaOrInstanceId,
+                            (int)_interval.TotalSeconds);
+                    }
+                }
+            }
+        }
+
+
     }
 }
