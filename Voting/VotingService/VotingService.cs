@@ -23,7 +23,10 @@ namespace VotingService
                 null,
                 Timeout.Infinite,
                 Timeout.Infinite);
-            
+
+            context.CodePackageActivationContext.ConfigurationPackageModifiedEvent +=
+                CodePackageActivationContext_ConfigurationPackageModifiedEvent;
+
         }
 
         /// <summary>
