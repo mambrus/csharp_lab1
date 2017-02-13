@@ -8,7 +8,7 @@
   -->
 
   <Section Name="Health">
-    <Parameter Name="HealthCheckIntervalSeconds" Value="40" />
+    <Parameter Name="HealthCheckIntervalSeconds" Value="60" />
   </Section>
 
 </Settings>
