@@ -32,7 +32,7 @@ namespace VotingService
         {
             public const EventKeywords Requests = (EventKeywords)0x1L;
             public const EventKeywords ServiceInitialization = (EventKeywords)0x2L;
-            public const EventKeywords HealthRepport = (EventKeywords)0x4L;
+            public const EventKeywords HealthReport = (EventKeywords)0x4L;
         }
         #endregion
 
@@ -161,49 +161,48 @@ namespace VotingService
         }
         */
 
+        // Point #24
         private const int HealthReportEventId = 100;
-
         [Event(HealthReportEventId,
             Level = EventLevel.LogAlways,
-            Message = "Health report. Source '{0}' proprty {1} is {2}. Partition: {3}, Instance or Replica: {4} Desc {5}.",
-            Keywords = Keywords.HealthRepport)]
-        public void HealthReport(string healthSourceID,
+            Message = "Health report. Source '{0}' property {1} is {2}. Partition: {3}, Instance or Replica: {4} Desc: {5}.",
+            Keywords = Keywords.HealthReport)]
+        public void HealthReport(string healthSourceId, 
             string name, 
-            string state, 
-            Guid partition, 
-            long instanceOrReplica, 
-            string description,
-            string caller = "")
+            string state,
+            Guid partition,
+            long instanceOrReplica,
+            string description)
         {
             WriteEvent(HealthReportEventId, 
-                healthSourceID, 
+                healthSourceId, 
                 name, 
                 state, 
                 partition, 
                 instanceOrReplica, 
                 description);
         }
-        private const int HealthReportIntervalChangedEventId = 101;
 
-        [Event(HealthReportIntervalChangedEventId,
-            Level = EventLevel.Informational,
-            Message = "Health interval report changed to {4} seconds for {0} proprietory {1}. Partition: {2} Instance or Replica: {3}.",
-            Keywords = Keywords.Requests)]
-        public void HealthReportIntervalChanged(string healthSourceID, 
+        private const int HealthReportIntervalChangedEventId = 101;
+        [Event(HealthReportIntervalChangedEventId, 
+            Level = EventLevel.Informational, 
+            Message = "Health report interval changed to {4} seconds for {0} property {1}. Partition: {2} Instance or Replica: {3}.", 
+            Keywords = Keywords.HealthReport)]
+        public void HealthReportIntervalChanged(string healthSourceId, 
             string name, 
             Guid partition, 
-            long instanceOrReploca, 
+            long instanceOrReplica, 
             int duration)
         {
             WriteEvent(HealthReportIntervalChangedEventId, 
-                healthSourceID, 
+                healthSourceId, 
                 name, 
                 partition, 
-                instanceOrReploca, 
+                instanceOrReplica, 
                 duration);
         }
 
-        //25
+        //Point #25
         private const int ServiceRequestStartEventId = 5;
         [Event(ServiceRequestStartEventId,
             Level = EventLevel.Informational,
